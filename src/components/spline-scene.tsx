@@ -1,42 +1,36 @@
 "use client"
 
-import { useState } from 'react'
-import Spline from '@splinetool/react-spline'
+import { useEffect, useRef } from "react"
+import { Application } from "@splinetool/runtime"
 
-export function SplineScene() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+interface SplineSceneProps {
+  sceneUrl: string
+  className?: string
+}
 
-  const handleLoad = () => {
-    setIsLoading(false)
-  }
+export function SplineScene({ sceneUrl, className }: SplineSceneProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const appRef = useRef<Application | null>(null)
 
-  const handleError = (e: any) => {
-    setError(e?.message || 'Failed to load 3D scene')
-    setIsLoading(false)
-  }
+  useEffect(() => {
+    if (!canvasRef.current) return
+
+    const app = new Application(canvasRef.current)
+    appRef.current = app
+
+    app.load(sceneUrl).catch((error: Error) => {
+      console.error("Error loading Spline scene:", error)
+    })
+
+    return () => {
+      app.dispose()
+    }
+  }, [sceneUrl])
 
   return (
-    <div className="spline-container">
-      {error ? (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-destructive">Failed to load 3D scene: {error}</p>
-        </div>
-      ) : (
-        <>
-          {isLoading && (
-            <div className="flex items-center justify-center h-full">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          )}
-          <Spline 
-            scene="https://prod.spline.design/6HNQS-T8WzExuqxK/scene.splinecode"
-            onLoad={handleLoad}
-            onError={handleError}
-            className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
-          />
-        </>
-      )}
-    </div>
+    <canvas
+      ref={canvasRef}
+      className={className}
+    />
   )
 } 

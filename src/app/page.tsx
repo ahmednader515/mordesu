@@ -20,7 +20,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-pattern" />
         
         {/* Spline 3D Scene */}
-        <SplineScene />
+        <SplineScene 
+          sceneUrl="https://prod.spline.design/6HNQS-T8WzExuqxK/scene.splinecode"
+          className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
+        />
         <ScrollArrow />
       </section>
 

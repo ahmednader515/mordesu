@@ -1,46 +1,55 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ChevronDown, ChevronUp } from "lucide-react"
 
 export function ScrollArrow() {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      setIsVisible(scrollPosition < 100) // Hide after scrolling 100px
+    const toggleVisibility = () => {
+      if (window.pageYOffset > 300) {
+        setIsVisible(true)
+      } else {
+        setIsVisible(false)
+      }
     }
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", toggleVisibility)
+    return () => window.removeEventListener("scroll", toggleVisibility)
   }, [])
 
-  const scrollToContent = () => {
+  const scrollToTop = () => {
     window.scrollTo({
-      top: window.innerHeight,
+      top: 0,
       behavior: "smooth"
     })
   }
 
+  if (!isVisible) return null
+
   return (
-    <div 
-      className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
-      }`}
+    <button
+      onClick={scrollToTop}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="fixed bottom-8 right-8 z-50 rounded-full bg-primary/80 p-3 text-white shadow-lg transition-all duration-300 hover:bg-primary hover:scale-110 hover:shadow-xl"
+      aria-label="Scroll to top"
     >
-      <button
-        onClick={scrollToContent}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className="group p-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-110"
-        aria-label="Scroll to content"
-      >
-        <ChevronDown className={`w-6 h-6 text-white/80 group-hover:text-white transition-colors ${
+      <svg
+        className={`h-6 w-6 ${
           isHovered ? "animate-bounce-spring" : "animate-shake"
-        }`} />
-      </button>
-    </div>
+        }`}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="m18 15-6-6-6 6" />
+      </svg>
+    </button>
   )
 } 
