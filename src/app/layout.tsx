@@ -16,7 +16,7 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Mordesu Studio | استوديو مورديسيو | Game Development Studio",
+  title: "Mordesu Studio | استوديو مورديسيو",
   description: "Mordesu Studio (استوديو مورديسيو) is a leading Arabic game development studio based in Cairo, Egypt. We specialize in creating immersive gaming experiences and innovative game development solutions.",
   keywords: "Mordesu, Mordesu Studio, استوديو مورديسيو, مورديسيو, game development, game studio, مصر, Cairo, Arabic games, استوديو ألعاب, تطوير ألعاب",
   authors: [{ name: "Mordesu Studio" }],

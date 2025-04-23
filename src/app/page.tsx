@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { SectionHeading } from "@/components/ui/section-heading"
-import { SplineScene } from "@/components/spline-scene"
+import { SplineContainer } from "@/components/spline-container"
 import { Navbar } from "@/components/navbar"
 import { AchievementCarousel } from "@/components/achievement-carousel"
 import { SteamIcon } from "@/components/icons/steam"
@@ -20,11 +20,15 @@ export default function Home() {
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-pattern" />
         
         {/* Spline 3D Scene */}
-        <SplineScene 
+        <SplineContainer 
           sceneUrl="https://prod.spline.design/6HNQS-T8WzExuqxK/scene.splinecode"
           className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
         />
+        
         <ScrollArrow />
+        
+        {/* Bottom Color Bar */}
+        <div className="absolute bottom-0 left-0 w-full h-15 bg-[#0A1023]" />
       </section>
 
       {/* Featured Games Section */}
