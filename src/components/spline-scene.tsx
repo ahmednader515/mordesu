@@ -16,20 +16,20 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
 
+  // Detect mobile devices
   useEffect(() => {
-    // Check if device is mobile
     const checkMobile = () => {
-      const isMobileDevice = window.innerWidth <= 768
+      // Use a more reliable mobile detection method
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768
       setIsMobile(isMobileDevice)
       
       // Check for low-end devices
       const isLowEnd = isMobileDevice && (
-        // Check for older devices or low memory
-        navigator.hardwareConcurrency <= 4 || 
-        // Check for low-end GPUs
-        /(android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini)/i.test(navigator.userAgent)
+        navigator.hardwareConcurrency <= 4
       )
       setIsLowEndDevice(isLowEnd)
+      
+      console.log("Device detection:", { isMobileDevice, isLowEnd, userAgent: navigator.userAgent })
     }
     
     checkMobile()
@@ -38,6 +38,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
+  // Initialize Spline
   useEffect(() => {
     if (!canvasRef.current) return
 
@@ -52,22 +53,20 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
     setHasError(false)
 
     try {
-      const app = new Application(canvasRef.current, {
-        // Use manual rendering mode for better performance
-        renderMode: isMobile ? 'manual' : 'auto'
-      })
+      console.log("Initializing Spline app", { isMobile, isLowEndDevice })
       
+      const app = new Application(canvasRef.current)
       appRef.current = app
 
       app.load(sceneUrl)
         .then(() => {
-          setIsLoaded(true)
           console.log("Spline scene loaded successfully")
+          setIsLoaded(true)
         })
         .catch((error: Error) => {
           console.error("Error loading Spline scene:", error)
           setHasError(true)
-          setIsLoaded(true) // Set loaded to true even on error to hide loading state
+          setIsLoaded(true)
         })
     } catch (error) {
       console.error("Error initializing Spline app:", error)
@@ -81,7 +80,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
         appRef.current = null
       }
     }
-  }, [sceneUrl, isMobile])
+  }, [sceneUrl])
 
   return (
     <div className="relative w-full h-full">
@@ -112,15 +111,15 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
           width: '100%',
           height: '100%',
           transform: isLowEndDevice 
-            ? 'scale(0.5)' // Much lower resolution for low-end devices
+            ? 'scale(0.5)' 
             : isMobile 
-              ? 'scale(0.75)' // Medium resolution for regular mobile devices
-              : 'none', // Full resolution for desktop
+              ? 'scale(0.75)' 
+              : 'none',
           transformOrigin: 'center center',
-          imageRendering: isLowEndDevice ? 'pixelated' : 'auto', // Use pixelated rendering for low-end devices
-          visibility: isLoaded && !hasError ? 'visible' : 'hidden', // Hide canvas until loaded or if error
-          position: 'relative', // Ensure canvas is positioned correctly
-          zIndex: 1, // Ensure canvas is above background but below loading/error messages
+          imageRendering: isLowEndDevice ? 'pixelated' : 'auto',
+          display: isLoaded && !hasError ? 'block' : 'none', // Use display instead of visibility
+          position: 'relative',
+          zIndex: 1,
         }}
       />
     </div>
