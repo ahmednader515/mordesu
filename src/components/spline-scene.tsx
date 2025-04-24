@@ -14,6 +14,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
   const [isMobile, setIsMobile] = useState(false)
   const [isLowEndDevice, setIsLowEndDevice] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
   useEffect(() => {
     // Check if device is mobile
@@ -40,27 +41,45 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
   useEffect(() => {
     if (!canvasRef.current) return
 
-    const app = new Application(canvasRef.current, {
-      // Use manual rendering mode for better performance
-      renderMode: isMobile ? 'manual' : 'auto'
-    })
-    
-    appRef.current = app
+    // Dispose of any existing app
+    if (appRef.current) {
+      appRef.current.dispose()
+      appRef.current = null
+    }
 
     // Show loading state
     setIsLoaded(false)
+    setHasError(false)
 
-    app.load(sceneUrl)
-      .then(() => {
-        setIsLoaded(true)
+    try {
+      const app = new Application(canvasRef.current, {
+        // Use manual rendering mode for better performance
+        renderMode: isMobile ? 'manual' : 'auto'
       })
-      .catch((error: Error) => {
-        console.error("Error loading Spline scene:", error)
-        setIsLoaded(true) // Set loaded to true even on error to hide loading state
-      })
+      
+      appRef.current = app
+
+      app.load(sceneUrl)
+        .then(() => {
+          setIsLoaded(true)
+          console.log("Spline scene loaded successfully")
+        })
+        .catch((error: Error) => {
+          console.error("Error loading Spline scene:", error)
+          setHasError(true)
+          setIsLoaded(true) // Set loaded to true even on error to hide loading state
+        })
+    } catch (error) {
+      console.error("Error initializing Spline app:", error)
+      setHasError(true)
+      setIsLoaded(true)
+    }
 
     return () => {
-      app.dispose()
+      if (appRef.current) {
+        appRef.current.dispose()
+        appRef.current = null
+      }
     }
   }, [sceneUrl, isMobile])
 
@@ -74,6 +93,18 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
           </div>
         </div>
       )}
+      
+      {hasError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+          <div className="text-center p-4">
+            <p className="text-red-500 font-medium">Failed to load 3D scene</p>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              Please try refreshing the page or check your internet connection.
+            </p>
+          </div>
+        </div>
+      )}
+      
       <canvas
         ref={canvasRef}
         className={className}
@@ -87,7 +118,9 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
               : 'none', // Full resolution for desktop
           transformOrigin: 'center center',
           imageRendering: isLowEndDevice ? 'pixelated' : 'auto', // Use pixelated rendering for low-end devices
-          visibility: isLoaded ? 'visible' : 'hidden', // Hide canvas until loaded
+          visibility: isLoaded && !hasError ? 'visible' : 'hidden', // Hide canvas until loaded or if error
+          position: 'relative', // Ensure canvas is positioned correctly
+          zIndex: 1, // Ensure canvas is above background but below loading/error messages
         }}
       />
     </div>
