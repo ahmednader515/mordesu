@@ -19,16 +19,31 @@ export default function Home() {
         {/* Grid Background */}
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-pattern" />
         
-        {/* Spline 3D Scene */}
-        <SplineContainer 
-          sceneUrl="https://prod.spline.design/vos3y9G6NzsOGS4h/scene.splinecode"
-          className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
-        />
+        {/* Spline 3D Scene - Desktop Only */}
+        <div className="hidden md:block w-full h-full">
+          <SplineContainer 
+            sceneUrl="https://prod.spline.design/ek0uvHF8rgKJI-NK/scene.splinecode"
+            className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
+          />
+        </div>
+        
+        {/* Video Background - Mobile Only */}
+        <div className="md:hidden w-full h-full">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            className="w-full h-full object-cover opacity-100"
+          >
+            <source src="/robot.mp4" type="video/mp4" />
+          </video>
+        </div>
         
         <ScrollArrow />
         
         {/* Bottom Color Bar */}
-        <div className="absolute bottom-0 left-0 w-full h-15 bg-[#0A1023]" />
+        <div className="absolute bottom-0 left-0 w-full h-15 bg-[#0A1023] z-10" />
       </section>
 
       {/* Featured Games Section */}

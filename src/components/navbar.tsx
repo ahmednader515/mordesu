@@ -34,10 +34,50 @@ export function Navbar() {
     setActiveDropdown(null)
   }, [])
 
+  // Handle smooth scrolling for hash links
+  const handleHashLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault()
+      const element = document.querySelector(href)
+      if (element) {
+        const navbarHeight = 80; // Height of the fixed navbar
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }
+
+  // Handle link click with proper timing
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, isMobile: boolean = false) => {
+    // Only prevent default and handle hash links
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      handleHashLinkClick(e, href);
+    }
+    
+    // Close the dropdown and mobile menu after a small delay
+    setTimeout(() => {
+      handleDropdownClose();
+      if (isMobile) {
+        toggleMenu();
+      }
+    }, 100);
+  }
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      // Don't close if clicking on the dropdown button or menu
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target as Node) &&
+        !(event.target as Element).closest('.dropdown-menu')
+      ) {
         handleDropdownClose()
       }
     }
@@ -47,9 +87,9 @@ export function Navbar() {
   }, [handleDropdownClose])
 
   const gamesLinks = [
-    { href: "#featured-games", label: "الألعاب المميزة" },
-    { href: "https://store.steampowered.com/search/?developer=MordeSu%20studio", label: "Steam" },
-    { href: "https://play.google.com/store/apps/dev?id=7189528374457116405", label: "Google Play" }
+    { href: "#featured-games", label: "الألعاب المميزة", isExternal: false },
+    { href: "https://store.steampowered.com/search/?developer=MordeSu%20studio", label: "Steam", isExternal: true },
+    { href: "https://play.google.com/store/apps/dev?id=7189528374457116405", label: "Google Play", isExternal: true }
   ]
 
   return (
@@ -89,16 +129,29 @@ export function Navbar() {
                   <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${activeDropdown === "games" ? "rotate-180" : ""}`} />
                 </Button>
                 {activeDropdown === "games" && (
-                  <div className="absolute top-full right-0 w-48 bg-background/90 backdrop-blur-md rounded-lg shadow-lg border border-white/10 py-2 mt-1 z-50">
+                  <div className="absolute top-full right-0 w-48 bg-background/90 backdrop-blur-md rounded-lg shadow-lg border border-white/10 py-2 mt-1 z-50 dropdown-menu">
                     {gamesLinks.map((link, index) => (
-                      <Link 
-                        key={index}
-                        href={link.href}
-                        className="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-                        onClick={handleDropdownClose}
-                      >
-                        {link.label}
-                      </Link>
+                      link.isExternal ? (
+                        <a 
+                          key={index}
+                          href={link.href}
+                          className="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                          onClick={() => handleDropdownClose()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link 
+                          key={index}
+                          href={link.href}
+                          className="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                          onClick={(e) => handleLinkClick(e, link.href)}
+                        >
+                          {link.label}
+                        </Link>
+                      )
                     ))}
                   </div>
                 )}
@@ -110,7 +163,7 @@ export function Navbar() {
                 className="text-white/90 hover:text-white hover:bg-white/10 relative group"
                 asChild
               >
-                <Link href="#team">
+                <Link href="#team" onClick={(e) => handleLinkClick(e, "#team")}>
                   <span>عن الاستوديو</span>
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                 </Link>
@@ -122,7 +175,7 @@ export function Navbar() {
                 className="text-white/90 hover:text-white hover:bg-white/10 relative group"
                 asChild
               >
-                <Link href="#social-networks">
+                <Link href="#social-networks" onClick={(e) => handleLinkClick(e, "#social-networks")}>
                   <span>تواصل معنا</span>
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                 </Link>
@@ -134,7 +187,7 @@ export function Navbar() {
                 className="ml-2 border-primary/30 text-primary hover:bg-primary/10 hover:text-primary transition-all duration-300"
                 asChild
               >
-                <Link href="#achievements">
+                <Link href="#achievements" onClick={(e) => handleLinkClick(e, "#achievements")}>
                   انجازاتنا
                 </Link>
               </Button>
@@ -180,19 +233,32 @@ export function Navbar() {
                 <span className="flex-1 text-right">الألعاب</span>
               </Button>
               {activeDropdown === "games-mobile" && (
-                <div className="w-full bg-background/90 backdrop-blur-md rounded-lg shadow-lg border border-white/10 py-2 mt-1">
+                <div className="w-full bg-background/90 backdrop-blur-md rounded-lg shadow-lg border border-white/10 py-2 mt-1 dropdown-menu">
                   {gamesLinks.map((link, index) => (
-                    <Link 
-                      key={index}
-                      href={link.href}
-                      className="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors text-right"
-                      onClick={() => {
-                        handleDropdownClose()
-                        toggleMenu()
-                      }}
-                    >
-                      {link.label}
-                    </Link>
+                    link.isExternal ? (
+                      <a 
+                        key={index}
+                        href={link.href}
+                        className="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors text-right"
+                        onClick={() => {
+                          handleDropdownClose();
+                          toggleMenu();
+                        }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link 
+                        key={index}
+                        href={link.href}
+                        className="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors text-right"
+                        onClick={(e) => handleLinkClick(e, link.href, true)}
+                      >
+                        {link.label}
+                      </Link>
+                    )
                   ))}
                 </div>
               )}
@@ -203,7 +269,10 @@ export function Navbar() {
               className="text-white/90 hover:text-white hover:bg-white/10 justify-start"
               asChild
             >
-              <Link href="#team" onClick={toggleMenu} className="text-right w-full">
+              <Link href="#team" onClick={(e) => {
+                handleLinkClick(e, "#team");
+                toggleMenu();
+              }} className="text-right w-full">
                 عن الاستوديو
               </Link>
             </Button>
@@ -213,7 +282,10 @@ export function Navbar() {
               className="text-white/90 hover:text-white hover:bg-white/10 justify-start"
               asChild
             >
-              <Link href="#social-networks" onClick={toggleMenu} className="text-right w-full">
+              <Link href="#social-networks" onClick={(e) => {
+                handleLinkClick(e, "#social-networks");
+                toggleMenu();
+              }} className="text-right w-full">
                 تواصل معنا
               </Link>
             </Button>
@@ -223,7 +295,10 @@ export function Navbar() {
               className="mt-2 border-primary/30 text-primary hover:bg-primary/10 hover:text-primary"
               asChild
             >
-              <Link href="#achievements" onClick={toggleMenu} className="text-right w-full">
+              <Link href="#achievements" onClick={(e) => {
+                handleLinkClick(e, "#achievements");
+                toggleMenu();
+              }} className="text-right w-full">
                 انجازاتنا
               </Link>
             </Button>

@@ -8,7 +8,7 @@ interface SplineSceneProps {
   className?: string
 }
 
-export function SplineScene({ sceneUrl = "https://prod.spline.design/vos3y9G6NzsOGS4h/scene.splinecode", className }: SplineSceneProps) {
+export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgKJI-NK/scene.splinecode", className }: SplineSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const appRef = useRef<Application | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
