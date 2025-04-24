@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { SectionHeading } from "@/components/ui/section-heading"
-import { SplineContainer } from "@/components/spline-container"
+import { LazySplineContainer } from "@/components/lazy-spline-container"
 import { Navbar } from "@/components/navbar"
 import { AchievementCarousel } from "@/components/achievement-carousel"
 import { SteamIcon } from "@/components/icons/steam"
@@ -21,7 +21,7 @@ export default function Home() {
         
         {/* Spline 3D Scene - Desktop Only */}
         <div className="hidden md:block w-full h-full">
-          <SplineContainer 
+          <LazySplineContainer 
             sceneUrl="https://prod.spline.design/ek0uvHF8rgKJI-NK/scene.splinecode"
             className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
           />
