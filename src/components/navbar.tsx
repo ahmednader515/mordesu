@@ -98,7 +98,7 @@ export function Navbar() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled 
             ? "bg-background/80 backdrop-blur-md border-b border-white/10 shadow-lg" 
-            : "bg-transparent"
+            : "bg-[#0A1023]"
         }`}
       >
         <div className="container px-4 mx-auto">
