@@ -21,7 +21,7 @@ export default function Home() {
         
         {/* Spline 3D Scene */}
         <SplineContainer 
-          sceneUrl="https://prod.spline.design/6HNQS-T8WzExuqxK/scene.splinecode"
+          sceneUrl="https://prod.spline.design/vos3y9G6NzsOGS4h/scene.splinecode"
           className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
         />
         

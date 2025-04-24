@@ -8,7 +8,7 @@ interface SplineSceneProps {
   className?: string
 }
 
-export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzExuqxK/scene.splinecode", className }: SplineSceneProps) {
+export function SplineScene({ sceneUrl = "https://prod.spline.design/vos3y9G6NzsOGS4h/scene.splinecode", className }: SplineSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const appRef = useRef<Application | null>(null)
   const [isMobile, setIsMobile] = useState(false)
@@ -113,7 +113,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
           transform: isLowEndDevice 
             ? 'scale(0.5)' 
             : isMobile 
-              ? 'scale(0.75)' 
+              ? 'scale(1)'
               : 'none',
           transformOrigin: 'center center',
           imageRendering: isLowEndDevice ? 'pixelated' : 'auto',
