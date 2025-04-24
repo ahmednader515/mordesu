@@ -28,13 +28,14 @@ export default function Home() {
         </div>
         
         {/* Video Background - Mobile Only */}
-        <div className="md:hidden w-full h-full">
+        <div className="md:hidden w-full h-full relative">
           <video 
             autoPlay 
             muted 
             loop 
             playsInline
-            className="w-full h-full object-cover opacity-100"
+            className="absolute inset-0 w-full h-full object-cover opacity-100"
+            style={{ backgroundColor: '#0A1023' }}
           >
             <source src="/robot.mp4" type="video/mp4" />
           </video>
