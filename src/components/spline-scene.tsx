@@ -11,10 +11,12 @@ interface SplineSceneProps {
 export function SplineScene({ sceneUrl = "https://prod.spline.design/vos3y9G6NzsOGS4h/scene.splinecode", className }: SplineSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const appRef = useRef<Application | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [isLowEndDevice, setIsLowEndDevice] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
   // Detect mobile devices
   useEffect(() => {
@@ -38,9 +40,34 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/vos3y9G6Nzs
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Initialize Spline
+  // Set up intersection observer for lazy loading
   useEffect(() => {
-    if (!canvasRef.current) return
+    if (!containerRef.current) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect() // Stop observing once visible
+        }
+      },
+      {
+        rootMargin: '200px 0px', // Start loading when within 200px of viewport
+        threshold: 0.1 // Trigger when at least 10% of the element is visible
+      }
+    )
+
+    observer.observe(containerRef.current)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  // Initialize Spline only when visible
+  useEffect(() => {
+    if (!canvasRef.current || !isVisible) return
 
     // Dispose of any existing app
     if (appRef.current) {
@@ -80,11 +107,11 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/vos3y9G6Nzs
         appRef.current = null
       }
     }
-  }, [sceneUrl])
+  }, [sceneUrl, isVisible])
 
   return (
-    <div className="relative w-full h-full">
-      {!isLoaded && (
+    <div ref={containerRef} className="relative w-full h-full">
+      {!isLoaded && isVisible && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-t-transparent border-blue-500 rounded-full animate-spin mx-auto"></div>
@@ -113,7 +140,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/vos3y9G6Nzs
           transform: isLowEndDevice 
             ? 'scale(0.5)' 
             : isMobile 
-              ? 'scale(1)'
+              ? 'scale(1)' 
               : 'none',
           transformOrigin: 'center center',
           imageRendering: isLowEndDevice ? 'pixelated' : 'auto',
