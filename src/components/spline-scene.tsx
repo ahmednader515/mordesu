@@ -12,11 +12,23 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const appRef = useRef<Application | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [isLowEndDevice, setIsLowEndDevice] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     // Check if device is mobile
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768)
+      const isMobileDevice = window.innerWidth <= 768
+      setIsMobile(isMobileDevice)
+      
+      // Check for low-end devices
+      const isLowEnd = isMobileDevice && (
+        // Check for older devices or low memory
+        navigator.hardwareConcurrency <= 4 || 
+        // Check for low-end GPUs
+        /(android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini)/i.test(navigator.userAgent)
+      )
+      setIsLowEndDevice(isLowEnd)
     }
     
     checkMobile()
@@ -35,9 +47,17 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
     
     appRef.current = app
 
-    app.load(sceneUrl).catch((error: Error) => {
-      console.error("Error loading Spline scene:", error)
-    })
+    // Show loading state
+    setIsLoaded(false)
+
+    app.load(sceneUrl)
+      .then(() => {
+        setIsLoaded(true)
+      })
+      .catch((error: Error) => {
+        console.error("Error loading Spline scene:", error)
+        setIsLoaded(true) // Set loaded to true even on error to hide loading state
+      })
 
     return () => {
       app.dispose()
@@ -45,15 +65,31 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/6HNQS-T8WzE
   }, [sceneUrl, isMobile])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={className}
-      style={{
-        width: '100%',
-        height: '100%',
-        transform: isMobile ? 'scale(0.75)' : 'none',
-        transformOrigin: 'center center',
-      }}
-    />
+    <div className="relative w-full h-full">
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-t-transparent border-blue-500 rounded-full animate-spin mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Loading 3D scene...</p>
+          </div>
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        className={className}
+        style={{
+          width: '100%',
+          height: '100%',
+          transform: isLowEndDevice 
+            ? 'scale(0.5)' // Much lower resolution for low-end devices
+            : isMobile 
+              ? 'scale(0.75)' // Medium resolution for regular mobile devices
+              : 'none', // Full resolution for desktop
+          transformOrigin: 'center center',
+          imageRendering: isLowEndDevice ? 'pixelated' : 'auto', // Use pixelated rendering for low-end devices
+          visibility: isLoaded ? 'visible' : 'hidden', // Hide canvas until loaded
+        }}
+      />
+    </div>
   )
 } 
