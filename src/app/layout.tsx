@@ -30,6 +30,15 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://mordesu.com",
   },
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/logo.png',
+    },
+  },
   openGraph: {
     title: "Mordesu Studio | استوديو مورديسيو",
     description: "Leading Arabic game development studio based in Cairo, Egypt. Specializing in immersive gaming experiences and innovative game development.",

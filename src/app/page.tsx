@@ -34,7 +34,8 @@ export default function Home() {
             muted 
             loop 
             playsInline
-            className="absolute inset-0 w-full h-full object-cover opacity-100"
+            controlsList="nodownload"
+            className="absolute inset-0 w-full h-full object-cover opacity-100 pointer-events-none"
             style={{ backgroundColor: '#0A1023' }}
           >
             <source src="/robot.mp4" type="video/mp4" />
