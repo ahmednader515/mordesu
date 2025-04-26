@@ -107,7 +107,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         appRef.current = null
       }
     }
-  }, [sceneUrl, isVisible])
+  }, [sceneUrl, isVisible, isMobile, isLowEndDevice])
 
   return (
     <div ref={containerRef} className="relative w-full h-full">

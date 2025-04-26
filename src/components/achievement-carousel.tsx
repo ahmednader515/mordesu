@@ -51,21 +51,18 @@ const achievements = [
 export function AchievementCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const [direction, setDirection] = useState<'next' | 'prev'>('next')
   const [isPaused, setIsPaused] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   
   const nextSlide = () => {
     if (isTransitioning) return
     setIsTransitioning(true)
-    setDirection('next')
     setCurrentIndex((prevIndex) => (prevIndex + 1) % achievements.length)
   }
   
   const prevSlide = () => {
     if (isTransitioning) return
     setIsTransitioning(true)
-    setDirection('prev')
     setCurrentIndex((prevIndex) => (prevIndex - 1 + achievements.length) % achievements.length)
   }
   
@@ -86,7 +83,7 @@ export function AchievementCarousel() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [isPaused])
+  }, [isPaused, nextSlide])
   
   // Reset transition state after animation completes
   useEffect(() => {
