@@ -4,6 +4,7 @@ import "./globals.css";
 import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/components/theme-provider";
 import StructuredData from "./structured-data";
+import Image from "next/image";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -162,6 +163,41 @@ export default function RootLayout({
                       <span>mordesu1studio@gmail.com</span>
                     </li>
                   </ul>
+                </div>
+
+                {/* Partners */}
+                <div>
+                  <h3 className="text-lg font-bold mb-6">شركاؤنا</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Image
+                      src="/sna3.png"
+                      alt="SNA3"
+                      width={50}
+                      height={50}
+                      className="opacity-80 hover:opacity-100 transition-opacity"
+                    />
+                    <Image
+                      src="/sa3id.png"
+                      alt="SA3ID"
+                      width={50}
+                      height={50}
+                      className="opacity-80 hover:opacity-100 transition-opacity"
+                    />
+                    <Image
+                      src="/amman.png"
+                      alt="Amman"
+                      width={50}
+                      height={50}
+                      className="opacity-80 hover:opacity-100 transition-opacity"
+                    />
+                    <Image
+                      src="/watan.png"
+                      alt="Watan"
+                      width={50}
+                      height={50}
+                      className="opacity-80 hover:opacity-100 transition-opacity"
+                    />
+                  </div>
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { Button } from "./ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
@@ -50,42 +50,108 @@ const achievements = [
 
 export function AchievementCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [direction, setDirection] = useState<'next' | 'prev'>('next')
+  const [isPaused, setIsPaused] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
   
   const nextSlide = () => {
+    if (isTransitioning) return
+    setIsTransitioning(true)
+    setDirection('next')
     setCurrentIndex((prevIndex) => (prevIndex + 1) % achievements.length)
   }
   
   const prevSlide = () => {
+    if (isTransitioning) return
+    setIsTransitioning(true)
+    setDirection('prev')
     setCurrentIndex((prevIndex) => (prevIndex - 1 + achievements.length) % achievements.length)
+  }
+  
+  // Auto-rotate every 5 seconds
+  useEffect(() => {
+    const startTimer = () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+      
+      if (!isPaused) {
+        timerRef.current = setInterval(() => {
+          nextSlide()
+        }, 5000)
+      }
+    }
+    
+    startTimer()
+    
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [isPaused])
+  
+  // Reset transition state after animation completes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsTransitioning(false)
+    }, 500) // Match this with the CSS transition duration
+    
+    return () => clearTimeout(timer)
+  }, [currentIndex])
+  
+  const handleMouseEnter = () => {
+    setIsPaused(true)
+  }
+  
+  const handleMouseLeave = () => {
+    setIsPaused(false)
   }
   
   const currentAchievement = achievements[currentIndex]
   
   return (
-    <div className="relative w-full">
+    <div 
+      className="relative w-full overflow-hidden"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="w-[90%] mx-auto bg-card/50 backdrop-blur-sm rounded-lg overflow-hidden border border-muted-foreground/10 shadow-lg">
         <div className="flex flex-col md:flex-row">
           {/* Image Side */}
-          <div className="w-full md:w-1/2 h-64 md:h-auto relative">
+          <div className="w-full md:w-1/2 h-64 md:h-auto relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent z-10" />
-            <Image
-              src={currentAchievement.image}
-              alt={currentAchievement.title}
-              fill
-              className="object-cover"
-            />
+            <div 
+              className={`relative w-full h-full transition-transform duration-500 ease-in-out ${
+                isTransitioning 
+                  ? 'translate-x-[-100%]' 
+                  : 'translate-x-0'
+              }`}
+            >
+              <Image
+                src={currentAchievement.image}
+                alt={currentAchievement.title}
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
           
           {/* Content Side */}
           <div className="w-full md:w-1/2 p-6 flex flex-col justify-center">
-            <div className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60 mb-2">
-              {currentAchievement.number}
+            <div 
+              className={`transition-transform duration-500 ease-in-out ${
+                isTransitioning 
+                  ? 'translate-x-[-100%]' 
+                  : 'translate-x-0'
+              }`}
+            >
+              <div className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60 mb-2">
+                {currentAchievement.number}
+              </div>
+              <h3 className="text-2xl font-semibold mb-2">{currentAchievement.title}</h3>
+              <p className="text-muted-foreground mb-6">{currentAchievement.description}</p>
+              <Button asChild className="w-fit">
+                <a href={currentAchievement.link}>زيارة الصفحة</a>
+              </Button>
             </div>
-            <h3 className="text-2xl font-semibold mb-2">{currentAchievement.title}</h3>
-            <p className="text-muted-foreground mb-6">{currentAchievement.description}</p>
-            <Button asChild className="w-fit">
-              <a href={currentAchievement.link}>زيارة الصفحة</a>
-            </Button>
           </div>
         </div>
       </div>
@@ -98,7 +164,7 @@ export function AchievementCarousel() {
           className="rounded-full bg-background/50 backdrop-blur-sm hover:bg-background/80 pointer-events-auto"
           onClick={prevSlide}
         >
-        <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="h-6 w-6" />
         </Button>
         <Button 
           variant="ghost" 
@@ -108,20 +174,6 @@ export function AchievementCarousel() {
         >
           <ChevronLeft className="h-6 w-6" />
         </Button>
-      </div>
-      
-      {/* Indicators */}
-      <div className="flex justify-center mt-4 gap-2">
-        {achievements.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              index === currentIndex ? "bg-primary" : "bg-muted-foreground/30"
-            }`}
-            onClick={() => setCurrentIndex(index)}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
       </div>
     </div>
   )

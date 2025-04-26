@@ -83,12 +83,23 @@ const config = {
           "10%, 30%, 50%, 70%, 90%": { transform: "translateY(-5px)" },
           "20%, 40%, 60%, 80%": { transform: "translateY(5px)" },
         },
+        "gradient-xy": {
+          "0%, 100%": {
+            "background-size": "400% 400%",
+            "background-position": "left center"
+          },
+          "50%": {
+            "background-size": "200% 200%",
+            "background-position": "right center"
+          }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "bounce-spring": "bounce-spring 2s infinite",
         "shake": "shake 1.5s ease-in-out infinite",
+        "gradient-xy": "gradient-xy 15s ease infinite",
       },
     },
   },

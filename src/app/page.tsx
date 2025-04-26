@@ -8,6 +8,7 @@ import { AchievementCarousel } from "@/components/achievement-carousel"
 import { SteamIcon } from "@/components/icons/steam"
 import Image from "next/image"
 import { ScrollArrow } from "@/components/scroll-arrow"
+import { GiftIcon } from "@/components/gift-icon"
 
 export default function Home() {
   return (
@@ -15,7 +16,7 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <section id="home" className="relative h-screen flex items-center justify-center bg-gradient-to-b from-background via-background/95 to-muted/50 overflow-hidden">
+      <section id="home" className="relative h-screen flex items-center justify-center bg-background overflow-hidden">
         {/* Grid Background */}
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-pattern" />
         
@@ -45,17 +46,39 @@ export default function Home() {
         <ScrollArrow />
         
         {/* Bottom Color Bar */}
-        <div className="absolute bottom-0 left-0 w-full h-15 bg-[#0A1023] z-10" />
+        <div className="absolute bottom-0 left-0 w-full h-15 bg-[#0C1227] z-10">
+          <div 
+            className="absolute inset-0 z-20"
+            style={{
+              backgroundImage: `radial-gradient(#3b82f6 1.3px, transparent 1.3px), radial-gradient(#3b82f6 1.3px, #0C1227 1.3px)`,
+              backgroundSize: '52px 52px',
+              backgroundPosition: '0 0, 26px 26px',
+              opacity: 0.15
+            }}
+          />
+        </div>
       </section>
+      
+      {/* Gift Icon - Appears when ScrollArrow disappears */}
+      <GiftIcon />
 
       {/* Featured Games Section */}
-      <section id="featured-games" className="py-20 bg-muted/30">
-        <div className="container px-4 mx-auto">
+      <section id="featured-games" className="relative py-16 overflow-hidden bg-[#0C1227]">
+        <div 
+          className="absolute inset-0 z-[5]"
+          style={{
+            backgroundImage: `radial-gradient(#3b82f6 1.3px, transparent 1.3px), radial-gradient(#3b82f6 1.3px, #0C1227 1.3px)`,
+            backgroundSize: '52px 52px',
+            backgroundPosition: '0 0, 26px 26px',
+            opacity: 0.15
+          }}
+        />
+        <div className="container mx-auto px-4 relative z-10">
           <SectionHeading 
             title="اشهر الالعاب" 
             subtitle="اكتشف اشهر الالعاب التي قمنا بتطويرها"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 max-w-6xl mx-auto">
             {/* First Game Card with Main_Capsule3.png */}
             <Card className="overflow-hidden border-muted-foreground/10 hover:border-primary/20 transition-colors">
               <div className="aspect-video relative">
@@ -130,7 +153,7 @@ export default function Home() {
           </div>
 
           {/* Platform Cards - Full Width */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 max-w-4xl mx-auto">
             {/* Steam Games Collection Card */}
             <Card className="overflow-hidden border-muted-foreground/10 hover:border-primary/20 transition-colors bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 h-full flex flex-col">
               <CardHeader className="text-center space-y-4">
@@ -292,21 +315,40 @@ export default function Home() {
         </section>
 
         {/* Achievements Section */}
-        <section id="achievements" className="py-20 bg-muted/30">
-        <div className="container px-4 mx-auto">
-          <SectionHeading 
-            title="انجازاتنا" 
-            subtitle="المعلومات التي تعرفك على مورديسو استوديو"
+        <section id="achievements" className="py-20 bg-muted/30 relative overflow-hidden">
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: `radial-gradient(circle, transparent 20%, #0C1227 20%, #0C1227 80%, transparent 80%, transparent), 
+                          radial-gradient(circle, transparent 20%, #0C1227 20%, #0C1227 80%, transparent 80%, transparent) 32.5px 32.5px, 
+                          linear-gradient(#3b82f6 1.3px, transparent 1.3px) 0 -0.65px, 
+                          linear-gradient(90deg, #3b82f6 1.3px, #0C1227 1.3px) -0.65px 0`,
+              backgroundSize: '65px 65px, 65px 65px, 32.5px 32.5px, 32.5px 32.5px',
+              opacity: 0.15
+            }}
           />
-          <div className="mt-12">
-            <AchievementCarousel />
+          <div className="container px-4 mx-auto relative z-10">
+            <SectionHeading 
+              title="انجازاتنا" 
+              subtitle="أهم انجازات مورديسو استوديو في هذا العام"
+            />
+            <div className="mt-12">
+              <AchievementCarousel />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* Team Section */}
-      <section id="team" className="py-20">
-        <div className="container px-4 mx-auto">
+      <section id="team" className="py-20 relative overflow-hidden">
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at center center, #3b82f6, #0C1227), repeating-radial-gradient(circle at center center, #3b82f6, #3b82f6, 26px, transparent 52px, transparent 26px)`,
+            backgroundBlendMode: 'multiply',
+            opacity: 0.15
+          }}
+        />
+        <div className="container px-4 mx-auto relative z-10">
           <SectionHeading 
             title="فريقنا" 
             subtitle="أهم مبدعين اعضاء مورديسو استوديو"
