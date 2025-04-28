@@ -6,9 +6,14 @@ import { Application } from "@splinetool/runtime"
 interface SplineSceneProps {
   sceneUrl?: string
   className?: string
+  videoUrl?: string
 }
 
-export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgKJI-NK/scene.splinecode", className }: SplineSceneProps) {
+export function SplineScene({ 
+  sceneUrl = "https://prod.spline.design/ek0uvHF8rgKJI-NK/scene.splinecode", 
+  className,
+  videoUrl = "robot.mp4"
+}: SplineSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const appRef = useRef<Application | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -79,9 +84,9 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
     }
   }, [])
 
-  // Initialize Spline only when visible
+  // Initialize Spline only when visible and not on mobile
   useEffect(() => {
-    if (!canvasRef.current || !isVisible) return
+    if (!canvasRef.current || !isVisible || isMobile) return
 
     // Dispose of any existing app
     if (appRef.current) {
@@ -176,7 +181,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         height: '100%'
       }}
     >
-      {!isLoaded && isVisible && (
+      {!isLoaded && isVisible && !isMobile && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-t-transparent border-blue-500 rounded-full animate-spin mx-auto"></div>
@@ -185,7 +190,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         </div>
       )}
       
-      {hasError && (
+      {hasError && !isMobile && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
           <div className="text-center p-4">
             <p className="text-red-500 font-medium">Failed to load 3D scene</p>
@@ -196,23 +201,47 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         </div>
       )}
       
-      <canvas
-        ref={canvasRef}
-        className={className}
-        style={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 1,
-          display: isLoaded && !hasError ? 'block' : 'none',
-          transform: isMobile ? 'scale(0.5)' : 'none',
-          transformOrigin: 'center bottom',
-        }}
-      />
+      {/* 3D Model - Only show on non-mobile devices */}
+      {!isMobile && (
+        <canvas
+          ref={canvasRef}
+          className={className}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+            display: isLoaded && !hasError ? 'block' : 'none',
+            transformOrigin: 'center bottom',
+          }}
+        />
+      )}
+      
+      {/* Video - Only show on mobile devices */}
+      {isMobile && isVisible && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+          }}
+        >
+          <source src={videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
     </div>
   )
 } 
