@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import Image from "next/image"
 import { Button } from "./ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
@@ -54,11 +54,11 @@ export function AchievementCarousel() {
   const [isPaused, setIsPaused] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     if (isTransitioning) return
     setIsTransitioning(true)
     setCurrentIndex((prevIndex) => (prevIndex + 1) % achievements.length)
-  }
+  }, [isTransitioning])
   
   const prevSlide = () => {
     if (isTransitioning) return

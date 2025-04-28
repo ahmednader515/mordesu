@@ -18,22 +18,6 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
   const [hasError, setHasError] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isReducedMotion, setIsReducedMotion] = useState(false)
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-
-  // Update dimensions on resize
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect()
-        setDimensions({ width, height })
-      }
-    }
-    
-    updateDimensions()
-    window.addEventListener('resize', updateDimensions)
-    
-    return () => window.removeEventListener('resize', updateDimensions)
-  }, [])
 
   // Detect mobile devices and device capabilities
   useEffect(() => {
@@ -45,7 +29,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
       // Check for low-end devices based on multiple factors
       const isLowEnd = isMobileDevice && (
         navigator.hardwareConcurrency <= 4 || 
-        (navigator as any).deviceMemory <= 4 ||
+        ((navigator as { deviceMemory?: number }).deviceMemory ?? 8) <= 4 ||
         window.innerWidth <= 375 // Small screens are likely lower-end devices
       )
       setIsLowEndDevice(isLowEnd)
@@ -59,7 +43,7 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         isLowEnd, 
         userAgent: navigator.userAgent,
         hardwareConcurrency: navigator.hardwareConcurrency,
-        deviceMemory: (navigator as any).deviceMemory,
+        deviceMemory: (navigator as { deviceMemory?: number }).deviceMemory ?? 'unknown',
         prefersReducedMotion
       })
     }
@@ -121,16 +105,16 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         // Note: These are custom properties that may not exist in the current API
         // We'll use a try-catch to handle this gracefully
         try {
-          // @ts-ignore - These methods might not be in the type definitions
+          // @ts-expect-error - These methods might not be in the type definitions
           app.quality = 'low'
-        } catch (e) {
+        } catch {
           console.log("Quality setting not supported")
         }
       } else if (isMobile) {
         try {
-          // @ts-ignore - These methods might not be in the type definitions
+          // @ts-expect-error - These methods might not be in the type definitions
           app.quality = 'medium'
-        } catch (e) {
+        } catch {
           console.log("Quality setting not supported")
         }
       }
@@ -143,18 +127,18 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
           // Apply additional optimizations after loading
           if (isLowEndDevice || isMobile) {
             try {
-              // @ts-ignore - These methods might not be in the type definitions
+              // @ts-expect-error - These methods might not be in the type definitions
               app.animationSpeed = 0.8
-            } catch (e) {
+            } catch {
               console.log("Animation speed setting not supported")
             }
           }
           
           if (isReducedMotion) {
             try {
-              // @ts-ignore - These methods might not be in the type definitions
+              // @ts-expect-error - These methods might not be in the type definitions
               app.animationSpeed = 0.5
-            } catch (e) {
+            } catch {
               console.log("Animation speed setting not supported")
             }
           }

@@ -11,21 +11,7 @@ interface LazySplineContainerProps {
 
 export function LazySplineContainer({ sceneUrl, className, fullHeight }: LazySplineContainerProps) {
   const [isVisible, setIsVisible] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-
-  // Detect mobile devices
-  useEffect(() => {
-    const checkMobile = () => {
-      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768
-      setIsMobile(isMobileDevice)
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
 
   useEffect(() => {
     if (!containerRef.current) return
