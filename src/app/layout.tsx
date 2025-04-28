@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeProvider } from "@/components/theme-provider";
 import StructuredData from "./structured-data";
 import Image from "next/image";
+import { Analytics } from "@vercel/analytics/react"
 
 const inter = Inter({ 
   subsets: ["latin"],
