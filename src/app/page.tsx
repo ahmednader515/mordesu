@@ -20,28 +20,16 @@ export default function Home() {
         {/* Grid Background */}
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-pattern" />
         
-        {/* Spline 3D Scene - Desktop Only */}
-        <div className="hidden md:block w-full h-full">
+        {/* Spline 3D Scene - All Devices */}
+        <div className="absolute inset-0 w-full h-full">
           <LazySplineContainer 
             sceneUrl="https://prod.spline.design/ek0uvHF8rgKJI-NK/scene.splinecode"
             className="w-full h-full [filter:saturate(1.5)_contrast(1.1)]"
+            fullHeight={true}
           />
         </div>
         
-        {/* Video Background - Mobile Only */}
-        <div className="md:hidden w-full h-full relative">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
-            controlsList="nodownload"
-            className="absolute inset-0 w-full h-full object-cover opacity-100 pointer-events-none"
-            style={{ backgroundColor: '#0A1023' }}
-          >
-            <source src="/robot.mp4" type="video/mp4" />
-          </video>
-        </div>
+        {/* Video Background - Removed in favor of 3D model */}
         
         <ScrollArrow />
         

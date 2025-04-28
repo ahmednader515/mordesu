@@ -17,27 +17,57 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [isReducedMotion, setIsReducedMotion] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
-  // Detect mobile devices
+  // Update dimensions on resize
   useEffect(() => {
-    const checkMobile = () => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect()
+        setDimensions({ width, height })
+      }
+    }
+    
+    updateDimensions()
+    window.addEventListener('resize', updateDimensions)
+    
+    return () => window.removeEventListener('resize', updateDimensions)
+  }, [])
+
+  // Detect mobile devices and device capabilities
+  useEffect(() => {
+    const checkDeviceCapabilities = () => {
       // Use a more reliable mobile detection method
       const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768
       setIsMobile(isMobileDevice)
       
-      // Check for low-end devices
+      // Check for low-end devices based on multiple factors
       const isLowEnd = isMobileDevice && (
-        navigator.hardwareConcurrency <= 4
+        navigator.hardwareConcurrency <= 4 || 
+        (navigator as any).deviceMemory <= 4 ||
+        window.innerWidth <= 375 // Small screens are likely lower-end devices
       )
       setIsLowEndDevice(isLowEnd)
       
-      console.log("Device detection:", { isMobileDevice, isLowEnd, userAgent: navigator.userAgent })
+      // Check for reduced motion preference
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      setIsReducedMotion(prefersReducedMotion)
+      
+      console.log("Device detection:", { 
+        isMobileDevice, 
+        isLowEnd, 
+        userAgent: navigator.userAgent,
+        hardwareConcurrency: navigator.hardwareConcurrency,
+        deviceMemory: (navigator as any).deviceMemory,
+        prefersReducedMotion
+      })
     }
     
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
+    checkDeviceCapabilities()
+    window.addEventListener('resize', checkDeviceCapabilities)
     
-    return () => window.removeEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkDeviceCapabilities)
   }, [])
 
   // Set up intersection observer for lazy loading
@@ -80,15 +110,54 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
     setHasError(false)
 
     try {
-      console.log("Initializing Spline app", { isMobile, isLowEndDevice })
+      console.log("Initializing Spline app", { isMobile, isLowEndDevice, isReducedMotion })
       
       const app = new Application(canvasRef.current)
       appRef.current = app
+
+      // Apply performance optimizations
+      if (isLowEndDevice) {
+        // Reduce quality for low-end devices
+        // Note: These are custom properties that may not exist in the current API
+        // We'll use a try-catch to handle this gracefully
+        try {
+          // @ts-ignore - These methods might not be in the type definitions
+          app.quality = 'low'
+        } catch (e) {
+          console.log("Quality setting not supported")
+        }
+      } else if (isMobile) {
+        try {
+          // @ts-ignore - These methods might not be in the type definitions
+          app.quality = 'medium'
+        } catch (e) {
+          console.log("Quality setting not supported")
+        }
+      }
 
       app.load(sceneUrl)
         .then(() => {
           console.log("Spline scene loaded successfully")
           setIsLoaded(true)
+          
+          // Apply additional optimizations after loading
+          if (isLowEndDevice || isMobile) {
+            try {
+              // @ts-ignore - These methods might not be in the type definitions
+              app.animationSpeed = 0.8
+            } catch (e) {
+              console.log("Animation speed setting not supported")
+            }
+          }
+          
+          if (isReducedMotion) {
+            try {
+              // @ts-ignore - These methods might not be in the type definitions
+              app.animationSpeed = 0.5
+            } catch (e) {
+              console.log("Animation speed setting not supported")
+            }
+          }
         })
         .catch((error: Error) => {
           console.error("Error loading Spline scene:", error)
@@ -107,10 +176,22 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         appRef.current = null
       }
     }
-  }, [sceneUrl, isVisible, isMobile, isLowEndDevice])
+  }, [sceneUrl, isVisible, isMobile, isLowEndDevice, isReducedMotion])
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
+    <div 
+      ref={containerRef} 
+      className="relative h-full overflow-hidden"
+      style={{ 
+        width: '350%', 
+        marginRight: '-125%',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '100%'
+      }}
+    >
       {!isLoaded && isVisible && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
           <div className="text-center">
@@ -137,16 +218,15 @@ export function SplineScene({ sceneUrl = "https://prod.spline.design/ek0uvHF8rgK
         style={{
           width: '100%',
           height: '100%',
-          transform: isLowEndDevice 
-            ? 'scale(0.5)' 
-            : isMobile 
-              ? 'scale(1)' 
-              : 'none',
-          transformOrigin: 'center center',
-          imageRendering: isLowEndDevice ? 'pixelated' : 'auto',
-          display: isLoaded && !hasError ? 'block' : 'none', // Use display instead of visibility
-          position: 'relative',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           zIndex: 1,
+          display: isLoaded && !hasError ? 'block' : 'none',
+          transform: isMobile ? 'scale(0.5)' : 'none',
+          transformOrigin: 'center bottom',
         }}
       />
     </div>
