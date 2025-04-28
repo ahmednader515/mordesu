@@ -343,20 +343,36 @@ export default function Home() {
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { name: "مورديكاي", role: "مطور الالعاب", image: "/kaka.png" },
+              { name: "مورديكاي", role: "مطور الألعاب و مؤسس الأستوديو", image: "/kaka.png" },
               { name: "عمر شولح", role: "مطور التطبيقات", image: "/kaka2.png" },
               { name: "احمد نادر", role: "مطور مواقع الويب", image: "/kaka3.png" },
+              { name: "مصطفي عصام", role: "خدمة العملاء", image: "/male.png" },
+              { name: "نور الدين", role: "جرافيك ديزاينر", image: "/kaka4.png" },
+              { name: "نرمين مجدي", role: "ادارة اعمال الأستوديو", image: "/female.png" },
             ].map((member, i) => (
               <Card key={i} className="text-center border-muted-foreground/10 hover:border-primary/20 transition-colors">
                 <CardHeader>
                   <div className="flex justify-center mb-4">
                     <Avatar className="h-32 w-32 border-2 border-primary/20">
-                      <AvatarImage 
-                        src={member.image} 
-                        alt={member.name}
-                        className={`object-cover ${i === 2 ? 'object-[center_0%]' : ''}`}
-                      />
-                      <AvatarFallback className="bg-primary/10 text-primary text-2xl">?</AvatarFallback>
+                      {member.name === "مصطفي عصام" ? (
+                        <div className="relative w-full h-full">
+                          <AvatarImage 
+                            src={member.image} 
+                            alt={member.name}
+                            className="object-cover translate-y-5"
+                          />
+                          <AvatarFallback className="bg-primary/10 text-primary text-2xl">?</AvatarFallback>
+                        </div>
+                      ) : (
+                        <>
+                          <AvatarImage 
+                            src={member.image} 
+                            alt={member.name}
+                            className={`object-cover ${member.name === "احمد نادر" ? 'object-[center_0%]' : ''}`}
+                          />
+                          <AvatarFallback className="bg-primary/10 text-primary text-2xl">?</AvatarFallback>
+                        </>
+                      )}
                     </Avatar>
                   </div>
                   <CardTitle>{member.name}</CardTitle>

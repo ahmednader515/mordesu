@@ -172,12 +172,7 @@ export function SplineScene({
       ref={containerRef} 
       className="relative h-full overflow-hidden"
       style={{ 
-        width: '350%', 
-        marginRight: '-125%',
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
+        width: '100%',
         height: '100%'
       }}
     >
