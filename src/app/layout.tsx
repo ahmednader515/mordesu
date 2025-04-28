@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import StructuredData from "./structured-data";
 import Image from "next/image";
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -85,6 +86,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
           <Analytics />
+          <SpeedInsights />
           <footer className="bg-muted/50 border-t">
             <div className="container mx-auto px-4 py-16">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
