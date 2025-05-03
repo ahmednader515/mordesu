@@ -83,9 +83,8 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <Button asChild variant="outline" className="w-full border-primary/20 hover:bg-primary/10 flex items-center justify-center gap-2">
-                  <a href="https://store.steampowered.com/app/3666640/_/" target="_blank" rel="noopener noreferrer">
-                    <span>صفحة اللعبة</span>
-                    <SteamIcon className="h-4 w-4" />
+                  <a href="https://www.antumalsabiqon.com/" target="_blank" rel="noopener noreferrer">
+                    <span>موقع اللعبة</span>
                   </a>
                 </Button>
               </CardContent>
